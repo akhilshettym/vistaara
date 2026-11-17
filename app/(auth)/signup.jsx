@@ -1,73 +1,108 @@
-import { Alert, ImageBackground, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View, ActivityIndicator, useRouter, SafeAreaView, Formik, signupSchema, createUserWithEmailAndPassword, getAuth, bg, doc, getFirestore, setDoc, AsyncStorage, useState, useEffect } from "../../constants/Imports"
+import {
+  Alert,
+  ImageBackground,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  useRouter,
+  SafeAreaView,
+  Formik,
+  signupSchema,
+  createUserWithEmailAndPassword,
+  getAuth,
+  bg,
+  doc,
+  getFirestore,
+  setDoc,
+  AsyncStorage,
+  useState,
+  useEffect,
+} from "../../constants/Imports";
 
 const Signup = () => {
-  const router = useRouter()
-  const auth = getAuth()
-  const db = getFirestore()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const auth = getAuth();
+  const db = getFirestore();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkGuestAndLogout = async () => {
       try {
-        const isGuest = await AsyncStorage.getItem("isGuest")
+        const isGuest = await AsyncStorage.getItem("isGuest");
         if (isGuest === "true") {
-          await AsyncStorage.removeItem("isGuest")
-          await AsyncStorage.removeItem("userEmail")
+          await AsyncStorage.removeItem("isGuest");
+          await AsyncStorage.removeItem("userEmail");
         }
       } catch (error) {
-        console.error("Error checking guest status:", error)
+        console.error("Error checking guest status:", error);
       }
-    }
-    checkGuestAndLogout()
-  }, [])
+    };
+    checkGuestAndLogout();
+  }, []);
 
   const handleGuest = async () => {
     try {
-      const isGuest = await AsyncStorage.getItem("isGuest")
+      const isGuest = await AsyncStorage.getItem("isGuest");
       if (isGuest === "true") {
-        router.push("/home")
-        return
+        router.push("/home");
+        return;
       }
-      await AsyncStorage.setItem("isGuest", "true")
-      router.push("/home")
+      await AsyncStorage.setItem("isGuest", "true");
+      router.push("/home");
     } catch (error) {
       alert("Guest Error!");
-      Alert.alert("Guest Error!", error.message ?? "An unexpected error occurred. Please try again later.", [
-        { text: "OK" },
-      ])
+      Alert.alert(
+        "Guest Error!",
+        error.message ??
+          "An unexpected error occurred. Please try again later.",
+        [{ text: "OK" }],
+      );
     }
-  }
+  };
 
   const handleSignup = async (values) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password)
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password,
+      );
 
       await setDoc(doc(db, "users", user.uid), {
         name: values.name,
         email: values.email,
         createdAt: new Date(),
-      })
+      });
 
-      await AsyncStorage.setItem("userEmail", values.email)
-      await AsyncStorage.setItem("isGuest", "false")
-      router.push("/home")
+      await AsyncStorage.setItem("userEmail", values.email);
+      await AsyncStorage.setItem("isGuest", "false");
+      router.push("/home");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         alert("Signup Failed!");
-        Alert.alert("Signup Failed!", "This email address is already in use. Please use a different email.", [
-          { text: "OK" },
-        ])
+        Alert.alert(
+          "Signup Failed!",
+          "This email address is already in use. Please use a different email.",
+          [{ text: "OK" }],
+        );
       } else {
         alert("Signup Error!");
-        Alert.alert("Signup Error!", error.message ?? "An unexpected error occurred. Please try again later.", [
-          { text: "OK" },
-        ])
+        Alert.alert(
+          "Signup Error!",
+          error.message ??
+            "An unexpected error occurred. Please try again later.",
+          [{ text: "OK" }],
+        );
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <SafeAreaView className="bg-[#000000] flex-1">
@@ -80,7 +115,10 @@ const Signup = () => {
         }}
       >
         <View className="mb-10 items-center">
-          <Text className="pt-5 text-2xl text-white font-semibold text-center"> Let's get you started </Text>
+          <Text className="pt-5 text-2xl text-white font-semibold text-center">
+            {" "}
+            Let's get you started{" "}
+          </Text>
         </View>
 
         <ImageBackground
@@ -93,24 +131,34 @@ const Signup = () => {
             alignItems: "center",
             paddingVertical: 30,
           }}
-          imageStyle={{ borderRadius: 30, opacity: 0.85 }}>
+          imageStyle={{ borderRadius: 30, opacity: 0.85 }}
+        >
           <View className="absolute inset-0 bg-black/40" />
 
           <View className="w-80">
-
             <Formik
               initialValues={{
                 name: "",
                 email: "",
                 password: "",
-                confirmPassword: ""
+                confirmPassword: "",
               }}
               validationSchema={signupSchema}
               onSubmit={handleSignup}
             >
-              {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
                 <>
-                  <Text className="text-[#1ED760] mt-2 mb-2 font-semibold"> Name * </Text>
+                  <Text className="text-[#1ED760] mt-2 mb-2 font-semibold">
+                    {" "}
+                    Name *{" "}
+                  </Text>
                   <TextInput
                     className="h-11 border border-white text-white rounded px-2 bg-white/10"
                     onChangeText={handleChange("name")}
@@ -125,7 +173,10 @@ const Signup = () => {
                     </Text>
                   )}
 
-                  <Text className="text-[#1ED760] mt-4 mb-2 font-semibold"> Email * </Text>
+                  <Text className="text-[#1ED760] mt-4 mb-2 font-semibold">
+                    {" "}
+                    Email *{" "}
+                  </Text>
                   <TextInput
                     className="h-11 border border-white text-white rounded px-2 bg-white/10"
                     keyboardType="email-address"
@@ -141,7 +192,10 @@ const Signup = () => {
                     </Text>
                   )}
 
-                  <Text className="text-[#1ED760] mt-4 mb-2 font-semibold"> Password * </Text>
+                  <Text className="text-[#1ED760] mt-4 mb-2 font-semibold">
+                    {" "}
+                    Password *{" "}
+                  </Text>
                   <TextInput
                     className="h-11 border border-white text-white rounded px-2 bg-white/10"
                     secureTextEntry
@@ -157,7 +211,10 @@ const Signup = () => {
                     </Text>
                   )}
 
-                  <Text className="text-[#1ED760] mt-4 mb-2 font-semibold"> Confirm Password * </Text>
+                  <Text className="text-[#1ED760] mt-4 mb-2 font-semibold">
+                    {" "}
+                    Confirm Password *{" "}
+                  </Text>
                   <TextInput
                     className="h-11 border border-white text-white rounded px-2 bg-white/10"
                     secureTextEntry
@@ -181,7 +238,10 @@ const Signup = () => {
                     {loading ? (
                       <ActivityIndicator color="#000" />
                     ) : (
-                      <Text className="text-base font-bold text-center text-black"> Sign Up </Text>
+                      <Text className="text-base font-bold text-center text-black">
+                        {" "}
+                        Sign Up{" "}
+                      </Text>
                     )}
                   </TouchableOpacity>
                 </>
@@ -193,24 +253,37 @@ const Signup = () => {
                 className="flex flex-row justify-center items-center my-3"
                 onPress={() => router.push("/signin")}
               >
-                <Text className="text-white font-semibold"> Already a User? </Text>
-                <Text className="text-base font-semibold underline text-[#1ED760]"> Sign In </Text>
+                <Text className="text-white font-semibold">
+                  {" "}
+                  Already a User?{" "}
+                </Text>
+                <Text className="text-base font-semibold underline text-[#1ED760]">
+                  {" "}
+                  Sign In{" "}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 className="p-3 bg-[#1ED760] rounded-lg mt-8 flex flex-row justify-center items-center"
                 onPress={handleGuest}
               >
-                <Text className="text-base font-bold text-black"> Guest User </Text>
+                <Text className="text-base font-bold text-black">
+                  {" "}
+                  Guest User{" "}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
         </ImageBackground>
 
-        <StatusBar barStyle="light-content" backgroundColor="#2b2b2b" translucent />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="#2b2b2b"
+          translucent
+        />
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 export default Signup;
