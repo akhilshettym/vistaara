@@ -23,7 +23,7 @@ import FindSlots from "../components/restaurant/FindSlots"
 import Landing from "../app/landing"
 import { LinearGradient } from "expo-linear-gradient"
 import test from "../assets/images/landing.jpeg" // Change req
-import landing from "../assets/images/landing.jpeg" // Change required
+import landing from "../assets/images/landing.jpeg" // Change req
 
 export {
     bg, test, React, landing,
